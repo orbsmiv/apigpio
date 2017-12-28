@@ -1053,6 +1053,30 @@ class Pi(object):
         res = yield from self._pigpio_aio_command(_PI_CMD_SERVO, user_gpio, int(pulsewidth))
         return _u2i(res)
 
+    @asyncio.coroutine
+    def i2c_open(self, bus, address):
+        """Open an i2c device on a bus."""
+        res = yield from self._pigpio_aio_command(_PI_CMD_I2CO, int(bus), int(address))
+        return _u2i(res)
+
+    @asyncio.coroutine
+    def i2c_close(self, handle):
+        """Close an i2c handle."""
+        res = yield from self._pigpio_aio_command(_PI_CMD_I2CC, handle)
+        return _u2i(res)
+
+    @asyncio.coroutine
+    def i2c_write_byte_data(self, handle, register, data):
+        """Write byte to i2c register on handle."""
+        res = yield from self._pigpio_aio_command(_PI_CMD_I2CWB, handle, int(register), int(data))
+        return _u2i(res)
+
+    @asyncio.coroutine
+    def i2c_read_byte_data(self, handle, register):
+        """Write byte to i2c register on handle."""
+        res = yield from self._pigpio_aio_command(_PI_CMD_I2CRB, handle, int(register))
+        return _u2i(res)
+
     def __init__(self, loop=None):
         if loop is None:
             loop = asyncio.get_event_loop()
