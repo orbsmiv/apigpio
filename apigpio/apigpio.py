@@ -472,7 +472,7 @@ class _callback_handler(object):
     def _pigpio_aio_command(self, cmd,  p1, p2,):
         # FIXME: duplication with pi._pigpio_aio_command
         data = struct.pack('IIII', cmd, p1, p2, 0)
-        self._loop.sock_sendall(self.s, data)
+        yield from self._loop.sock_sendall(self.s, data)
         response = yield from self._loop.sock_recv(self.s, 16)
         _, res = struct.unpack('12sI', response)
         return res
@@ -1068,7 +1068,8 @@ class Pi(object):
     @asyncio.coroutine
     def i2c_write_byte_data(self, handle, register, data):
         """Write byte to i2c register on handle."""
-        res = yield from self._pigpio_aio_command(_PI_CMD_I2CWB, handle, int(register), int(data))
+        extents = [struct.pack("I", data)]
+        res = yield from self._pigpio_aio_command_ext(_PI_CMD_I2CWB, handle, int(register), 4, extents)
         return _u2i(res)
 
     @asyncio.coroutine
