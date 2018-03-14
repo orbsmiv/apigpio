@@ -1102,6 +1102,15 @@ class Pi(object):
                 data = ""
         return data
 
+    @asyncio.coroutine
+    def i2c_write_device(self, handle, data):
+        """Writes the data bytes to the raw device associated with handle."""
+        if len(data):
+            res = yield from self._pigpio_aio_command_ext(_PI_CMD_I2CWD, handle, 0, len(data), [data])
+            return _u2i(res)
+        else:
+            return 0
+
     def __init__(self, loop=None):
         if loop is None:
             loop = asyncio.get_event_loop()
